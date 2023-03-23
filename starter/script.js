@@ -489,4 +489,3 @@ for (const account of accounts) {
     console.log(account);
   }
 }
-const create = 0;
