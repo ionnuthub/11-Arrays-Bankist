@@ -68,9 +68,12 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = '';
-  movements.forEach(function (mov, i) {
+
+  const moves = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  moves.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `<div class="movements__row">
@@ -135,7 +138,7 @@ const updateUI = function (acc) {
   displayMovements(acc.movements);
 };
 
-//Event handler login
+//Event handlers login
 let currentAccount;
 
 btnLogin.addEventListener('click', function (e) {
@@ -169,11 +172,12 @@ btnTransfer.addEventListener('click', function (e) {
   //creating a variable wich contain the amount
   const amount = Number(inputTransferAmount.value);
   //Creating a variable which contain the receiver and we have to find the account obj to wich
-  //we want to trensfer
+  //we want to transfer
   const receiverAcc = accounts.find(
     acc => acc.userName === inputTransferTo.value
   );
-  console.log(amount, receiverAcc);
+  inputTransferAmount.value = inputTransferTo.value = '';
+  // console.log(amount, receiverAcc);
 
   if (
     amount > 0 &&
@@ -191,6 +195,52 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    //Add movement
+    currentAccount.movements.push(amount);
+
+    //Update UI
+    updateUI(currentAccount);
+    alert(`Loan of ${amount} added to your account🎉`);
+  } else {
+    alert('The Amount requested Has to be 10% from the deposit');
+  }
+  // Clear the Field
+  inputLoanAmount.value = '';
+});
+
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  //console.log('Delete');
+  if (
+    currentAccount?.userName === inputCloseUsername.value &&
+    currentAccount?.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.userName === currentAccount.userName
+    );
+    console.log(index);
+
+    //Delete account
+    accounts.splice(index, 1);
+
+    //Hide UI
+    containerApp.style.opacity = 0;
+  }
+  // Hide the input fields
+  inputCloseUsername.value = inputClosePin.value = '';
+});
+
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
 /////////////////////////////////////////////////
 // LECTURES
 
@@ -489,3 +539,158 @@ for (const account of accounts) {
     console.log(account);
   }
 }
+
+/// ❗some() Method
+console.log(movements);
+//EQUALITY
+console.log(movements.includes(-130));
+
+// SOME: CONDITION
+console.log(movements.some(mov => mov === -130));
+const anyDeposits = movements.some(mov => mov > 0);
+console.log(anyDeposits);
+
+///❗ every() Method
+console.log(movements.every(mov => mov > 0));
+console.log(account4.movements.every(mov => mov > 0));
+
+///❗Separate callback
+// and if we want to change the function we do it in one place
+const deposit = mov => mov > 0;
+console.log(movements.some(deposit));
+console.log(movements.every(deposit));
+console.log(movements.filter(deposit));
+
+//❗flat() Method
+//IT IS Perfect when we have nested arrays and we need to work with them
+
+const arr1 = [[1, 2, 3], [4, 5, 6], 7, 8];
+console.log(arr1.flat()); //remove the subbarrays just 1 level
+const deepArr = [[[1, 2], 3], [4, [5, 6]], 7, 8];
+//console.log(deepArr.flat(2)); // remove the subbarray 2 levels
+const deepArr1 = deepArr.flat(2);
+console.log(deepArr1);
+
+// we can do this to get all the values toghether from the accounts.movements
+const accountMovements = accounts.map(acc => acc.movements);
+console.log(accountMovements);
+const allMovements = accountMovements.flat();
+console.log(allMovements);
+const overalBalance = allMovements.reduce((acc, mov) => acc + mov, 0);
+console.log(overalBalance);
+
+// We can Chain all the methods for better code
+//Using the map() then flat() it is very common
+const overalBalance1 = accounts
+  .map(acc => acc.movements)
+  .flat()
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(overalBalance1);
+
+// We can use flatMap() wich it's better for performance
+// it goes just 1 level deep
+// if we need to go deeper we need to use the flat method
+const overalBalance2 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(overalBalance2);
+
+//❗Sorting Arrays
+//❗sort() Method
+//sort() Mutate the original array
+
+//Stings
+const owners = ['Jonas', 'Zach', 'Adam', 'Martha'];
+console.log(owners.sort());
+
+//////Numbers
+console.log(movements);
+//The sort() does the sorting based on strings(it's converting everything in strings and after does the sorting itself)
+//To fix this we need to call a calback function with 2 arguments
+
+// return < 0 ,A before B (keep order)
+// return >0 ,B before A (Switch order)
+
+//Ascending Order
+movements.sort((a, b) => {
+  //If we return less then 0(negative) the value a it will be sorted before b
+  //and if we return greater than 0(positive) ,than b it will be before a
+  //Ascending order we go from small to large numbers
+  //Descending order we go from large to small
+  if (a > b) return 1;
+  if (a < b) return -1;
+});
+console.log(movements);
+movements.sort((a, b) => {
+  if (a > b) return -1;
+  if (a < b) return 1;
+
+  //Descending Order
+});
+console.log(movements);
+
+//If we are working with numbers we can simplify this a lot
+
+movements.sort((a, b) => a - b);
+console.log(movements);
+movements.sort((a, b) => b - a);
+console.log(movements);
+
+//❗❗How Programmaticlay create and fill arrays❗
+
+//EMPTY ARRAYS + fill() Method
+const x = new Array(7);
+console.log(x); // Output very  weird behaivor of new Array() function wich does it so
+//whenever we only pass in one argument, than it creates a new empty argument with that length
+// this can lead to weird errors❗
+
+console.log(x.map(() => 5)); // this doesnt work❗ // when we try to call map on x isnot very usefull, except for one thing because is one method
+//wich we can call on this empty array and that is the fill() method.
+
+//❗ fill() Method
+x.fill(1, 3, 6); // first parameter is with what we want to fill
+// second parameter is the begin parameter and then its start at index which we specified like parameter and it will fill it up until the end unless we specified an end parameter just like in slice()
+// third parameter is the end where we want to stop fillilng
+console.log(x);
+
+const arrTest = [1, 2, 3, 4, 5, 6, 7];
+arrTest.fill(23, 2, 5);
+console.log(arrTest);
+
+///❗Array.from() If We want to create an array programmaticaly we can use
+//Array.from() function.  ✍️ Array is the function and on this function object we call the from() method.
+const y = Array.from({ length: 7 }, () => 1); //🖍️First argument we pass in is the length
+//The second argument is a mapping function
+console.log(y);
+
+const z = Array.from({ length: 7 }, (_, i) => i + 1); //we add one to the current index
+//this is exactly like the one in map()
+//( _ ) underscore convention we use when we throw away a variable✍️ and we have to still define something as first parameter
+// because the index we use is the second parameter.
+console.log(z);
+
+//🖍️ Strings,Maps , Sets are all iterable in JS and they can be converted in real arrays using Array.from()
+
+//🖍️ Another Great example as array like strucutes is the result of using
+//querySelectorAll(); // return something called NodeList wich is something like an array wich contains all the selected elements
+// but it's not a real array so doesnt have methods like map() or reduce()
+//🖍️ Array.from() is perfect If we want to use a real array method like that on NodeList we have to convert the NodeList in to an array and Array.from is perfect to use
+
+labelBalance.addEventListener('click', function (e) {
+  e.preventDefault();
+  const movementsUI = Array.from(
+    document.querySelectorAll('.movements__value'),
+    el => Number(el.textContent.replace('€', ''))
+  );
+  //We use Array.from() to create an array from the result of the querySelectorAll() wich is a NodeList which is not really an array but an array like structure and that array like structure can easily be converted to an array using Array.from() and
+  // then as a second step we even included a mapping function,which then forms that initial array to an array
+  // we do this to read all the movemnts from the User Interface as we click
+  console.log(movementsUI);
+});
+
+//Creating an array with 100 random dice rolls
+let diceRolls = Array.from(
+  { length: 100 },
+  () => Math.floor(Math.random() * 6) + 1
+);
+console.log(diceRolls);
