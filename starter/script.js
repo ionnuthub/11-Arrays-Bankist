@@ -694,3 +694,4 @@ let diceRolls = Array.from(
   () => Math.floor(Math.random() * 6) + 1
 );
 console.log(diceRolls);
+const grey = 0;
