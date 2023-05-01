@@ -687,11 +687,3 @@ labelBalance.addEventListener('click', function (e) {
   // we do this to read all the movemnts from the User Interface as we click
   console.log(movementsUI);
 });
-
-//Creating an array with 100 random dice rolls
-let diceRolls = Array.from(
-  { length: 100 },
-  () => Math.floor(Math.random() * 6) + 1
-);
-console.log(diceRolls);
-const grey = 0;
