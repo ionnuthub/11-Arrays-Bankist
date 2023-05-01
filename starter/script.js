@@ -686,4 +686,43 @@ labelBalance.addEventListener('click', function (e) {
   // then as a second step we even included a mapping function,which then forms that initial array to an array
   // we do this to read all the movemnts from the User Interface as we click
   console.log(movementsUI);
+
+  // Another way to convert an array from NodeList is using spread operator
+  //but we have to do the mapping separately
+  const movementsUI2 = [...document.querySelectorAll('.movements__value')];
+  console.log(movementsUI2);
 });
+
+//Creating an array with 100 random dice rolls
+let diceRolls = Array.from(
+  { length: 100 },
+  () => Math.floor(Math.random() * 6) + 1
+);
+console.log(diceRolls);
+
+////////////🌈 ARRAY METHODS PRACTICE/////
+//1.
+//We create a new array based on all the accounts movements and put them all together
+//Whenever we want a new array with the same length as previus one or the original one we use map() method
+const bankDepositSum = accounts
+  .flatMap(acc => acc.movements)
+  .filter(mov => mov > 0)
+  .reduce((sum, cur) => sum + cur, 0);
+//to remove all the values from the arrays into the parent array we use flat()
+//to simplefiet will use flatMap()
+//and ewe can filter() from pozitive values
+//then addem all toghether with reduce()
+console.log(bankDepositSum);
+
+//2.
+//i want to Count how many deposits there have been in the bank with at least 1000$
+const numDeposits1000 = accounts
+  .flatMap(acc => acc.movements) //we use flatMap() to create a new array and to add alll values toghether
+  .filter(mov => mov >= 1000).length; // we filter all the movements and take the length to count how many deposits
+console.log(numDeposits1000);
+
+//SECOND Method
+const num2Deposits1000 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((count, cur) => (cur >= 1000 ? count + 1 : count), 0);
+console.log(num2Deposits1000);
