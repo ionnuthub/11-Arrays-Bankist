@@ -829,21 +829,24 @@ console.log(`${ownersEatTooMuch.join(' and ')} dogs eat too much`);
 console.log(`${ownersEatTooLittle.join(' and ')} dogs eat to little`);
 
 //5.
-console.log(dogs.includes(dog => dog === dog.recommendedFood));
+const anyDogsExactlyAmountFood = dogs.some(
+  dog => dog.curFood === dog.recommendedFood
+);
+console.log(anyDogsExactlyAmountFood);
 
 //6.
-console.log(
-  dogs.includes(
-    dog =>
-      dog.curFood >= dog.recommendedFood * 0.9 &&
-      dog.curFood <= dog.recommendedFood * 1.1
-  )
+const anyDogsOkayAmountFood = dogs.some(
+  dog =>
+    dog.curFood > dog.recommendedFood * 0.9 &&
+    dog.curFood < dog.recommendedFood * 1.1
+);
+console.log(anyDogsOkayAmountFood);
+// 7.
+
+const dogsOkayFood = dogs.filter(
+  dog =>
+    dog.curFood > dog.recommendedFood * 0.9 &&
+    dog.curFood < dog.recommendedFood * 1.1
 );
 
-// 7.
-const dogsEatingOkay = dogs.map(
-  dog =>
-    dog.curFood >= dog.recommendedFood * 0.9 &&
-    dog.curFood <= dog.recommendedFood * 1.1
-);
-console.log(dogsEatingOkay);
+console.log(dogsOkayFood);
